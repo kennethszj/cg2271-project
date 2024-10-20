@@ -1,18 +1,15 @@
 #include "MKL25Z4.h"
 
 #define UART_RX_PORTE23 23
-
 #define BAUD_RATE 9600
 #define UART2_INT_PRIO 128
-
-#define LOAD_500ms 6000000
-#define LOAD_250ms 3000000
+#define BAUD_RATE 9600
 
 #define MASK(x) (1 << (x))
 
 volatile uint8_t data;
 
-void Init_UART2(uint32_t baud_rate)
+void Init_UART2()
 {
   uint32_t divisor, bus_clock;
 
@@ -29,10 +26,11 @@ void Init_UART2(uint32_t baud_rate)
 
   // Set baud rate for UART2
   bus_clock = (DEFAULT_SYSTEM_CLOCK / 2);
-  divisor = bus_clock / (baud_rate * 16);  // divisor = bus_clock / (16 * desired_baud_rate)
+  divisor = bus_clock / (BAUD_RATE * 16);  // divisor = bus_clock / (16 * desired_baud_rate)
   UART2->BDL = UART_BDL_SBR(divisor);      // sets the lower 8 bits of the baud rate divisor in the BDL register
   UART2->BDH = UART_BDH_SBR(divisor >> 8); // sets the higher 8 bits of divisor in the BDH register.
 
+  // TODO: consider if priority needs to be set
   NVIC_ClearPendingIRQ(UART2_IRQn); //  clears any pending interrupts for UART2
   NVIC_EnableIRQ(UART2_IRQn);       //  enables the UART2 interrupt
 
