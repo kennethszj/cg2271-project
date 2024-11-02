@@ -128,16 +128,6 @@ void loop() {
     response = "PLAY TONE";
     Serial2.write(0x20);  //0b00100000
   } 
-  /*
-       if (req.indexOf("on12") != -1) {digitalWrite(LED12, HIGH); estado = "LED12 ON";}
-       if (req.indexOf("off12") != -1){digitalWrite(LED12, LOW); estado = "LED12 OFF";}
-       if (req.indexOf("on14") != -1) {digitalWrite(LED14, HIGH); estado = "LED14 ON";}
-       if (req.indexOf("off14") != -1){digitalWrite(LED14, LOW); estado = "LED14 OFF";}
-       if (req.indexOf("consulta") != -1){
-           estado ="";
-           if (digitalRead(LED12) == HIGH) {estado = "LED12 ON,";} else {estado = "LED12 OFF,";}
-           if (digitalRead(LED14) == HIGH) {estado = estado + "LED14 ON";} else {estado = estado + "LED14 OFF";}
-           }*/
            
 
   client.println("HTTP/1.1 200 OK");
