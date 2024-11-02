@@ -9,12 +9,19 @@
 
 volatile uint8_t rx_data;
 
+#define COMPLETE -1
 #define MOVE_STOP 0
 #define MOVE_FORWARD 1
-#define MOVE_BACK 2
-#define MOVE_ACW 3
-#define MOVE_CW 4
-volatile uint8_t movement = 0;
+#define MOVE_FORWARD_HALF 2
+#define MOVE_BACK 3
+#define MOVE_BACK_HALF 4
+#define MOVE_ACW 5
+#define CURVE_ACW 6
+#define MOVE_CW 7
+#define CURVE_CW 8
+
+volatile uint8_t global_move_state = 0;
+volatile bool global_started_state = false;
 
 void Init_UART2()
 {
@@ -64,15 +71,34 @@ void UART2_IRQHandler()
   {
     rx_data = UART2->D;
 		if (rx_data == 0x10) { // stop
-			movement = MOVE_STOP;
+			global_move_state = MOVE_STOP;
 		} else if (rx_data == 0x11) { // forward
-			movement = MOVE_FORWARD;
+			global_move_state = MOVE_FORWARD;
+      global_started_state = true;
 		} else if (rx_data == 0x12) { // backward
-			movement = MOVE_BACK;
+			global_move_state = MOVE_BACK;
+      global_started_state = true;
 		} else if (rx_data == 0x13) { // anticlockwise
-			movement = MOVE_ACW;
+			global_move_state = MOVE_ACW;
+      global_started_state = true;
 		} else if (rx_data == 0x14) { // clockwise
-			movement = MOVE_CW;
-		}
+			global_move_state = MOVE_CW;
+      global_started_state = true;
+		} else if (rx_data == 0x15) {
+      global_move_state = MOVE_FORWARD_HALF;
+      global_started_state = true;
+    } else if (rx_data == 0x16) {
+      global_move_state = MOVE_BACK_HALF;
+      global_started_state = true;
+    } else if (rx_data == 0x17) {
+      global_move_state = CURVE_ACW;
+      global_started_state = true;
+    } else if (rx_data == 0x18) {
+      global_move_state = CURVE_CW;
+      global_started_state = true;
+    } else if (rx_data == 0x20) {
+      global_move_state = COMPLETE;
+      global_started_state = false;
+    }
   }
 }

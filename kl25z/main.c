@@ -2,7 +2,7 @@
 #include "pwm.h"
 #include "uart.h"
 
-extern volatile uint8_t movement;
+extern volatile uint8_t global_move_state;
 
 
 int main(void) {
@@ -10,15 +10,15 @@ int main(void) {
     initPWM();  // Initialize PWM for motors
 		Init_UART2();
 		while (1) {
-			if (movement == MOVE_STOP) {
+			if (global_move_state == MOVE_STOP || global_move_state == COMPLETE) {
 				moveStop();
-			} else if (movement == MOVE_FORWARD) {
+			} else if (global_move_state == MOVE_FORWARD) {
 				moveForward();
-			} else if (movement == MOVE_BACK) {
+			} else if (global_move_state == MOVE_BACK) {
 				moveBackward();
-			} else if (movement == MOVE_ACW) {
+			} else if (global_move_state == MOVE_ACW) {
 				moveACW();
-			} else if (movement == MOVE_CW) {
+			} else if (global_move_state == MOVE_CW) {
 				moveCW();
 			}
 		}

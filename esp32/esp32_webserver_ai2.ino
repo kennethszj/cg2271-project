@@ -112,11 +112,22 @@ void loop() {
   } else if (req.indexOf("clockwise") != -1) {
     response = "ROTATE CLOCKWISE";
     Serial2.write(0x14);  //0b00010100
+  } else if (req.indexOf("halfspeedforward") != -1) {
+    response = "HALFSPEEDFORWARDS";
+    Serial2.write(0x15);  //0b00010101
+  } else if (req.indexOf("halfspeedbackward") != -1) {
+    response = "HALFSPEEDBACKWARDS";
+    Serial2.write(0x16);  //0b00010110
+  } else if (req.indexOf("curveanticlockwise") != -1) {
+    response = "CURVEANTICLOCKWISE";
+    Serial2.write(0x17);  //00010111
+  } else if (req.indexOf("curveclockwise") != -1) {
+    response = "CURVECLOCKWISE";
+    Serial2.write(0x18);  //00011000
   } else if (req.indexOf("playtone") != -1) {
     response = "PLAY TONE";
     Serial2.write(0x20);  //0b00100000
-  }
-  
+  } 
   /*
        if (req.indexOf("on12") != -1) {digitalWrite(LED12, HIGH); estado = "LED12 ON";}
        if (req.indexOf("off12") != -1){digitalWrite(LED12, LOW); estado = "LED12 OFF";}
