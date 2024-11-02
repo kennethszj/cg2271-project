@@ -20,7 +20,7 @@ import { useToast } from "@chakra-ui/react";
 function App() {
 	const toast = useToast();
 
-	const baseUrl = `http://192.168.230.201`;
+	const baseUrl = `http://192.168.43.201`;
 	const sendCommand = (cmd: string) => {
 		fetch(`${baseUrl}/${cmd}`, {
 			method: "GET",
