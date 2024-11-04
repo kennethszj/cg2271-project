@@ -27,16 +27,32 @@ void motorThread(void *arguments)
 	}
 }
 
+void frontLedThread(void *arguments)
+{
+	for (;;)
+	{
+		handleFrontLed();
+	}
+}
+
+void rearLedThread(void *arguments)
+{
+	for (;;)
+	{
+		handleRearLed();
+	}
+}
+
 int main(void) {
 	SystemCoreClockUpdate();  // Update system clock to reflect current speed
 	initPWM();  // Initialize PWM for motors
 	Init_UART2();
 
-	// osKernelInitialize();
-	// osThreadNew(soundThread, NULL, NULL);
-	// osThreadNew(motorThread, NULL, NULL);
-	// osKernelStart();
-	for (;;) {
-		playSong1();
-	}
+	osKernelInitialize();
+	osThreadNew(soundThread, NULL, NULL);
+	osThreadNew(motorThread, NULL, NULL);
+	osThreadNew(frontLedThread, NULL, NULL);
+	osThreadNew(rearLedThread, NULL, NULL);
+	osKernelStart();
+	for (;;) {}
 }
