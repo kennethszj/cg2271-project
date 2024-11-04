@@ -1,18 +1,25 @@
-#include "MKL25Z4.h"  // Include header for MKL25Z4 microcontroller definitions
-#include "pwm.h"
+/*----------------------------------------------------------------------------
+ * CMSIS-RTOS 'main' function template
+ *---------------------------------------------------------------------------*/
+ 
+#include "RTE_Components.h"
+#include  CMSIS_device_header
+#include "cmsis_os2.h"
 #include "uart.h"
+#include "pwm.h"
 
-extern volatile uint8_t global_move_state;
+volatile uint8_t global_move_state = 0;
+volatile uint8_t global_started_state = 0;
 
-void soundThread(void)
+void soundThread(void *arguments)
 {
 	for (;;)
 	{
-		handleSound();
+		playSong1();
 	}
 }
 
-void motorThread(void)
+void motorThread(void *arguments)
 {
 	for (;;)
 	{
@@ -21,13 +28,15 @@ void motorThread(void)
 }
 
 int main(void) {
-    SystemCoreClockUpdate();  // Update system clock to reflect current speed
-    initPWM();  // Initialize PWM for motors
+	SystemCoreClockUpdate();  // Update system clock to reflect current speed
+	initPWM();  // Initialize PWM for motors
 	Init_UART2();
 
-	osKernelInitialize();
-	osKernelStart();
-	osThreadNew(soundThread, NULL, NULL);
-	osThreadNew(motorThread, NULL, NULL);
-	for(;;) {}
+	// osKernelInitialize();
+	// osThreadNew(soundThread, NULL, NULL);
+	// osThreadNew(motorThread, NULL, NULL);
+	// osKernelStart();
+	for (;;) {
+		playSong1();
+	}
 }

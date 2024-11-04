@@ -1,4 +1,5 @@
 #include "MKL25Z4.h"
+#include "macros.h"
 
 #define UART_RX_PORTE23 23
 #define BAUD_RATE 9600
@@ -9,19 +10,8 @@
 
 volatile uint8_t rx_data;
 
-#define COMPLETE -1
-#define MOVE_STOP 0
-#define MOVE_FORWARD 1
-#define MOVE_FORWARD_HALF 2
-#define MOVE_BACK 3
-#define MOVE_BACK_HALF 4
-#define MOVE_ACW 5
-#define CURVE_ACW 6
-#define MOVE_CW 7
-#define CURVE_CW 8
-
-volatile uint8_t global_move_state = 0;
-volatile bool global_started_state = false;
+extern volatile uint8_t global_move_state;
+extern volatile uint8_t global_started_state;
 
 void Init_UART2()
 {
@@ -74,31 +64,31 @@ void UART2_IRQHandler()
 			global_move_state = MOVE_STOP;
 		} else if (rx_data == 0x11) { // forward
 			global_move_state = MOVE_FORWARD;
-      global_started_state = true;
+      global_started_state = 1;
 		} else if (rx_data == 0x12) { // backward
 			global_move_state = MOVE_BACK;
-      global_started_state = true;
+      global_started_state = 1;
 		} else if (rx_data == 0x13) { // anticlockwise
 			global_move_state = MOVE_ACW;
-      global_started_state = true;
+      global_started_state = 1;
 		} else if (rx_data == 0x14) { // clockwise
 			global_move_state = MOVE_CW;
-      global_started_state = true;
+      global_started_state = 1;
 		} else if (rx_data == 0x15) {
       global_move_state = MOVE_FORWARD_HALF;
-      global_started_state = true;
+      global_started_state = 1;
     } else if (rx_data == 0x16) {
       global_move_state = MOVE_BACK_HALF;
-      global_started_state = true;
+      global_started_state = 1;
     } else if (rx_data == 0x17) {
       global_move_state = CURVE_ACW;
-      global_started_state = true;
+      global_started_state = 1;
     } else if (rx_data == 0x18) {
       global_move_state = CURVE_CW;
-      global_started_state = true;
+      global_started_state = 1;
     } else if (rx_data == 0x20) {
       global_move_state = COMPLETE;
-      global_started_state = false;
+      global_started_state = 0;
     }
   }
 }

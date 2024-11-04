@@ -3,7 +3,7 @@
  * Auto generated Run-Time-Environment Configuration File
  *      *** Do not modify ! ***
  *
- * Project: 'myRTX' 
+ * Project: 'kl25z' 
  * Target:  'Target 1' 
  */
 

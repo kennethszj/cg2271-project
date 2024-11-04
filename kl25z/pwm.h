@@ -1,4 +1,5 @@
 #include "MKL25Z4.h" 
+#include "macros.h"
 #define MASK(x) (1 << (x)) 
 
 // Pin numbers for PWM output on Port C and Port D (for TPM0 - Motors 0, 1, 2)
@@ -32,11 +33,14 @@
 
 void initPWM(void);
 void setMotorSpeed(int motor, int speedForward, int speedReverse);
-void moveForward(void);
-void moveBackward(void);
+void moveForward(int speed);
+void moveBackward(int speed);
 void moveCW(void);
 void moveACW(void);
 void moveStop(void);
+
+extern volatile uint8_t global_move_state;
+extern volatile uint8_t global_started_state;
 
 void initPWM(void) {
     // Enable clock for Port C, Port D, and Port A AND B
@@ -107,6 +111,8 @@ void initPWM(void) {
 
     // Enable PWM on TPM1 Channel 0
     TPM1_C0SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));
+		
+		moveStop();
 }
 
 
@@ -229,7 +235,7 @@ void moveStop(){
 void handleSound() {
     if (global_move_state == COMPLETE) {
         playSong2();
-    } else if (global_started_state) {
+    } else if (global_started_state == 1) {
         playSong1();
     }
 }
