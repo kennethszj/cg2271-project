@@ -13,7 +13,7 @@ volatile uint8_t rx_data;
 extern volatile uint8_t global_move_state;
 extern volatile uint8_t global_started_state;
 
-void Init_UART2()
+void initUART2()
 {
   uint32_t divisor, bus_clock;
 

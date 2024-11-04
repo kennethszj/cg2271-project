@@ -45,8 +45,9 @@ void rearLedThread(void *arguments)
 
 int main(void) {
 	SystemCoreClockUpdate();  // Update system clock to reflect current speed
-	initPWM();  // Initialize PWM for motors
-	Init_UART2();
+	initPWM();
+	initUART2();
+	initLED();
 
 	osKernelInitialize();
 	osThreadNew(soundThread, NULL, NULL);
