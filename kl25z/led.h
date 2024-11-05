@@ -3,7 +3,8 @@
 
 #define MASK(x) (1 << (x)) 
 #define SYSTEM_CLOCK 48000000
-volatile int global_move_state = 0; 
+extern volatile uint8_t global_move_state; 
+
 volatile uint8_t rear_led_state = 1; // [0,1]
 #define REAR_LED_PIN 5 // PTC5
 
@@ -74,8 +75,8 @@ void initLED(void) {
     // Load the start value for 250 ms (4 Hz)
     // PIT is clocked by the system clock (48 MHz), so we calculate:
     // Load value = (SYSTEM_CLOCK / Frequency) - 1
-    // 250 ms => 4 Hz, Load value = (48,000,000 / 4) - 1 = 11,999,999
-    PIT->CHANNEL[0].LDVAL = SYSTEM_CLOCK / 8 - 1; // Load the timer start value
+    // 2 Hz, Load value = (48,000,000 / 16) - 1
+    PIT->CHANNEL[0].LDVAL = SYSTEM_CLOCK / 16 - 1; // Load the timer start value
 
     // Enable the interrupt for PIT channel 0
     PIT->CHANNEL[0].TCTRL |= PIT_TCTRL_TIE_MASK; // Enable PIT interrupt
@@ -93,25 +94,33 @@ void PIT_IRQHandler(void) {
     PIT->CHANNEL[0].TFLG |= PIT_TFLG_TIF_MASK;
 
     // toggle rear led every 250ms
-    rear_led_state = rear_led_state == 0 ? 1 : 0;
+    rear_led_state = rear_led_state == 3 ? 0 : rear_led_state + 1;
     
     // toggle front led to increment and cycle from 0-9
     front_led_state = front_led_state == 9 ? 0 : front_led_state + 1;
 }
 
 void handleRearLed(void) { //when stop
-    if (rear_led_state == 1) {
-        PTC->PDOR |= MASK(REAR_LED_PIN); //set to high
-    } else {
-        PTC->PDOR &= ~MASK(REAR_LED_PIN);
-    }
+		if (global_move_state == MOVE_STOP || global_move_state == COMPLETE) {
+			if (rear_led_state % 2 == 0) {
+					PTC->PDOR |= MASK(REAR_LED_PIN); //set to high
+			} else {
+					PTC->PDOR &= ~MASK(REAR_LED_PIN);
+			}
+		} else {
+			if (rear_led_state == 1) {
+					PTC->PDOR |= MASK(REAR_LED_PIN); //set to high
+			} else if (rear_led_state == 3) {
+					PTC->PDOR &= ~MASK(REAR_LED_PIN);
+			}
+		}
 }
 
-void handleFrontLed(int global_move_state) {
-    if (global_move_state ==  MOVE_STOP) {// || state == COMPLETE (add this later)
+void handleFrontLed(void) {
+    if (global_move_state ==  MOVE_STOP || global_move_state == COMPLETE) {
         // set all pins to high
-        PTC->PDOR |= (MASK(FRONT_LED_PIN_1) | MASK(FRONT_LED_PIN_2) | MASK(FRONT_LED_PIN_3) | MASK(FRONT_LED_PIN_4) | MASK(FRONT_LED_PIN_5) | MASK(FRONT_LED_PIN_6) | MASK(FRONT_LED_PIN_7) | MASK(FRONT_LED_PIN_8) | MASK(FRONT_LED_PIN_9) | MASK(FRONT_LED_PIN_10));
-		PTC->PDOR &=  ~(MASK(FRONT_LED_PIN_1) | MASK(FRONT_LED_PIN_2) | MASK(FRONT_LED_PIN_3) | MASK(FRONT_LED_PIN_4) | MASK(FRONT_LED_PIN_5) | MASK(FRONT_LED_PIN_6) | MASK(FRONT_LED_PIN_7) | MASK(FRONT_LED_PIN_8) | MASK(FRONT_LED_PIN_9) | MASK(FRONT_LED_PIN_10));
+        PTC->PDOR |= (MASK(FRONT_LED_PIN_1) | MASK(FRONT_LED_PIN_2) | MASK(FRONT_LED_PIN_4) | MASK(FRONT_LED_PIN_5) | MASK(FRONT_LED_PIN_6) |  MASK(FRONT_LED_PIN_9) | MASK(FRONT_LED_PIN_10));
+				PTA->PDOR |= MASK(FRONT_LED_PIN_3) |MASK(FRONT_LED_PIN_7) | MASK(FRONT_LED_PIN_8);
     } else {
         // clear all other front led pins, set only pin corresponding to front_led_state to 1.
         for (int i = 0; i < 10; i++) {

@@ -1,4 +1,7 @@
 #include "MKL25Z4.h" 
+#include "RTE_Components.h"
+#include  CMSIS_device_header
+#include "cmsis_os2.h"
 #include "macros.h"
 #define MASK(x) (1 << (x)) 
 
@@ -107,14 +110,29 @@ void initPWM(void) {
     TPM0_C4SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));  // Enable edge-aligned PWM on TPM0_CH4 //M2
     TPM0_C5SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));  // Enable edge-aligned PWM on TPM0_CH5 //M2
     TPM2_C0SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));  // Enable edge-aligned PWM on TPM2_CH0 //M3
-    TPM2_C1SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));  // Enable edge-aligned PWM on TPM2_CH1 //M4
+    TPM2_C1SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));  // Enable edge-aligned PWM on TPM2_CH1 //M3
 
     // Enable PWM on TPM1 Channel 0
-    TPM1_C0SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));
-		
-		moveStop();
+    TPM1_C0SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));  //for buzzer
+
+    // Initialize all motor speed channels to zero
+    TPM0_C0V = 0;
+    TPM0_C1V = 0;
+    TPM0_C2V = 0;
+    TPM0_C3V = 0;
+    TPM0_C4V = 0;
+    TPM0_C5V = 0;
+    TPM2_C0V = 0;
+    TPM2_C1V = 0;
+    TPM1_C0V = 0; // For buzzer
 }
 
+static void delay(volatile uint32_t nof) {
+while(nof!=0) {
+__asm("NOP");
+nof--;
+}
+}
 
 //play a single note for a specified duration
 void playNote(int frequency, int duration) {
@@ -128,44 +146,38 @@ void playNote(int frequency, int duration) {
     // Set the MOD register to determine the PWM period
     TPM1->MOD = modValue;
 
-    // Set duty cycle to 50% by setting Channel 0 Value (C0V) (compare value)
+    // Set duty cycle to 50% by setting Channel 0 Value (C0V)
     TPM1_C0V = modValue / 2;
 
-    osDelay(500);
-    
+    // Delay for the note duration
+    osDelay(duration);
+
+    // Turn off the sound by setting duty cycle to zero
     TPM1_C0V = 0;
+	
+		osDelay(duration);
 }
 
-int songNotes1[] = {E, D, C, D, E, E, E, D, D, D, E, G, G};  
-int songDurations1[] = {0x100000, 0x100000, 0x100000, 0x100000, 0x100000, 0x100000, 0x100000, 0x100000, 0x100000, 0x100000, 0x100000, 0x100000, 0x100000}; 
 void playSong1() {
-    int i = 0;
-    int noOfNotes = 13;
-    while(1){
-        if (global_move_state == COMPLETE) {
-            break;
-        }
-        if (i >= noOfNotes){
-            i = 0;
-        }
-        playNote(songNotes1[i], songDurations1[i]); 
-        osDelay(1200);
-        i ++;
+    int songNotes[] = {E, D, C, D, E, E, E, D, D, D, E, G, G};  
+    int songDurations[] = {500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500}; 
+    int noOfNotes = 13; 
+
+    for (int i = 0; i < noOfNotes; i++) {
+				if (global_move_state == COMPLETE) {
+					break;
+				}
+        playNote(songNotes[i], songDurations[i]);
     }
 }
 
-int songNotes2[] = {D, E, E, E, D}; 
-int songDurations2[] = {0x100000, 0x100000, 0x100000, 0x100000, 0x100000, 0x100000, 0x100000};
 void playSong2() {
-    int i = 0;
+    int songNotes[] = {D, E, E, E, D}; 
+    int songDurations[] = {500, 500, 500, 500, 500}; 
     int noOfNotes = 5;
-    while(1){
-        if (i >= noOfNotes){
-            i = 0;
-        }
-        playNote(songNotes2[i], songDurations2[i]); 
-        osDelay(1200);
-        i ++;
+
+    for (int i = 0; i < noOfNotes; i++) {
+        playNote(songNotes[i], songDurations[i]);
     }
 }
 

@@ -7,15 +7,22 @@
 #include "cmsis_os2.h"
 #include "uart.h"
 #include "pwm.h"
+#include "led.h"
 
 volatile uint8_t global_move_state = 0;
 volatile uint8_t global_started_state = 0;
+
+/*
+Usage Example:
+delay(0x80000);
+*/
+
 
 void soundThread(void *arguments)
 {
 	for (;;)
 	{
-		playSong1();
+		handleSound();
 	}
 }
 
@@ -44,16 +51,16 @@ void rearLedThread(void *arguments)
 }
 
 int main(void) {
-	SystemCoreClockUpdate();  // Update system clock to reflect current speed
+	SystemCoreClockUpdate();
 	initPWM();
 	initUART2();
 	initLED();
 
 	osKernelInitialize();
 	osThreadNew(soundThread, NULL, NULL);
-	osThreadNew(motorThread, NULL, NULL);
 	osThreadNew(frontLedThread, NULL, NULL);
 	osThreadNew(rearLedThread, NULL, NULL);
+	osThreadNew(motorThread, NULL, NULL);
 	osKernelStart();
-	for (;;) {}
+	for(;;){}
 }

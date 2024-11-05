@@ -1,4 +1,4 @@
-#define COMPLETE 100
+#define COMPLETE 9
 #define MOVE_STOP 0
 #define MOVE_FORWARD 1
 #define MOVE_FORWARD_HALF 2

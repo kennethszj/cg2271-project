@@ -402,6 +402,11 @@
               <FileType>5</FileType>
               <FilePath>.\macros.h</FilePath>
             </File>
+            <File>
+              <FileName>led.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\led.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
