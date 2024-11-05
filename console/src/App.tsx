@@ -57,7 +57,7 @@ function App() {
 							onMouseDown={() => sendCommand("forward")}
 							onMouseUp={() => sendCommand("stop")}
 							onTouchStart={() => sendCommand("forward")}
-							onTouchEnd={() => sendCommand("forward")}
+							onTouchEnd={() => sendCommand("stop")}
 						>
 							<ArrowUpIcon boxSize={6} />
 						</Button>
@@ -65,9 +65,9 @@ function App() {
 							icon={<ArrowUpIcon />}
 							aria-label="Forward Half"
 							colorScheme="blue"
-							size="sm"
+							size="lg"
 							position="absolute"
-							top="-40px"
+							top="-60px"
 							left="20px"
 							onMouseDown={() => sendCommand("halfspeedforward")}
 							onMouseUp={() => sendCommand("stop")}
@@ -97,10 +97,10 @@ function App() {
 								icon={<FaUndoAlt />}
 								aria-label="Anticlockwise Rotation"
 								colorScheme="yellow"
-								size="sm"
+								size="lg"
 								position="absolute"
 								bottom="-10px"
-								left="-40px"
+								left="-60px"
 								onMouseDown={() => sendCommand("anticlockwise")}
 								onMouseUp={() => sendCommand("stop")}
 								onTouchStart={() => sendCommand("anticlockwise")}
@@ -127,10 +127,10 @@ function App() {
 								icon={<FaRedoAlt />}
 								aria-label="Clockwise Rotation"
 								colorScheme="purple"
-								size="sm"
+								size="lg"
 								position="absolute"
 								bottom="-10px"
-								right="-40px"
+								right="-60px"
 								onMouseDown={() => sendCommand("clockwise")}
 								onMouseUp={() => sendCommand("stop")}
 								onTouchStart={() => sendCommand("clockwise")}
@@ -158,9 +158,9 @@ function App() {
 							icon={<ArrowDownIcon />}
 							aria-label="Backward Half"
 							colorScheme="red"
-							size="sm"
+							size="lg"
 							position="absolute"
-							bottom="-40px"
+							bottom="-60px"
 							left="20px"
 							onMouseDown={() => sendCommand("halfspeedbackward")}
 							onMouseUp={() => sendCommand("stop")}
@@ -170,6 +170,17 @@ function App() {
 					</Box>
 					<Button
 						mt={20}
+						size="lg"
+						colorScheme="red"
+						height="80px"
+						width="100%"
+						aria-label="Complete"
+						onMouseDown={() => sendCommand("stop")}
+						onTouchStart={() => sendCommand("stop")}
+					>
+						Stop
+					</Button>
+					<Button
 						size="lg"
 						colorScheme="yellow"
 						height="80px"
